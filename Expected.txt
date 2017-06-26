@@ -1,0 +1,10 @@
+52:                 InitializeDataView()
+----------------------------------------^  ; expected [C:\Users\Sefi\Source\Repos\BuildAnalyzer\NorthwindTest\NorthwindTest.csproj]
+C:\Users\Sefi\Source\Repos\BuildAnalyzer\NorthwindTest\TestSubFormCallFor357.cs (P#11.1)
+
+========================
+Total errors: 1
+========================
+
+Projects:
+C:\Users\Sefi\Source\Repos\BuildAnalyzer\NorthwindTest\NorthwindTest.csproj
