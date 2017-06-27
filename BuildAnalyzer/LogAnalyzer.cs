@@ -5,16 +5,13 @@ namespace BuildAnalyzer
 {
     class LogAnalyzer
     {
-        readonly TextReader _logReader;
-        readonly TextWriter _resultWriter;
         readonly IFilesProvider _filesProvider;
-
+        readonly TextWriter _resultWriter;
         readonly HashSet<string> _projects = new HashSet<string>();
 
         public LogAnalyzer(IFilesProvider filesProvider)
         {
             _filesProvider = filesProvider;
-            _logReader = _filesProvider.GetLogReader();
             _resultWriter = _filesProvider.GetResultWriter();
         }
 
@@ -23,10 +20,10 @@ namespace BuildAnalyzer
             int errorCount = 0;
             using (_resultWriter)
             {
-                using (_logReader)
+                using (var logReader = _filesProvider.GetLogReader())
                 {
                     string logLine;
-                    while ((logLine = _logReader.ReadLine()) != null)
+                    while ((logLine = logReader.ReadLine()) != null)
                     {
                         if (logLine.Contains(": error"))
                         {
