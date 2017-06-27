@@ -9,7 +9,11 @@ namespace UnitTests
         [TestMethod]
         public void TestLogWithWarningsAndErrors()
         {
-            var mockFilesProvider = new MockLogWithWarningsAndErrorsFilesProvider();
+            Test(new MockLogWithWarningsAndErrorsFilesProvider());
+        }
+
+        static void Test(MockFilesProvider mockFilesProvider)
+        {
             var analyzer = new LogAnalyzer(mockFilesProvider);
             analyzer.Analyze();
             mockFilesProvider.AssertResult();
@@ -18,10 +22,15 @@ namespace UnitTests
         [TestMethod]
         public void TestLogWithErrorsOnly2()
         {
-            var mockFilesProvider = new MockLogWithErrorsOnlyFilesProvider();
-            var analyzer = new LogAnalyzer(mockFilesProvider);
-            analyzer.Analyze();
-            mockFilesProvider.AssertResult();
+            Test(new MockLogWithErrorsOnlyFilesProvider());
         }
+
+        [TestMethod]
+        public void TestSuccessfulLog()
+        {
+            Test(new MockSuccessfulLogFilesProvider());
+        }
+
+       
     }
 }

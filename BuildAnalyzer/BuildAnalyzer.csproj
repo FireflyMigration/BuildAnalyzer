@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorDetails.cs" />
+    <Compile Include="ErrorParser.cs" />
     <Compile Include="FileSystemFilesProvider.cs" />
     <Compile Include="IFilesProvider.cs" />
     <Compile Include="LogAnalyzer.cs" />

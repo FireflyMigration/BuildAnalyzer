@@ -18,6 +18,8 @@ namespace BuildAnalyzer
         internal int Analyze()
         {
             int errorCount = 0;
+            var errorParser = new ErrorParser();
+
             using (_resultWriter)
             {
                 using (var logReader = _filesProvider.GetLogReader())
@@ -27,8 +29,9 @@ namespace BuildAnalyzer
                     {
                         if (logLine.Contains(": error"))
                         {
-                            _projects.Add(ExtractProject(logLine));
-                            WriteCodeLine(logLine);
+                            var errorDetails = errorParser.ParseError(logLine);
+                            WriteCodeLine(errorDetails);
+                            _projects.Add(errorDetails.Project);
                             errorCount++;
                         }
 
@@ -46,59 +49,15 @@ namespace BuildAnalyzer
             return errorCount;
         }
 
-        static string ExtractProject(string logLine)
-        {
-            string projectFile = logLine.Substring(logLine.LastIndexOf('[') + 1);
-            projectFile = projectFile.Remove(projectFile.Length - 1);
-            return projectFile;
-        }
 
-        
-
-        void WriteCodeLine(string logLine)
-        {
-            string codeFileName = logLine.Remove(logLine.IndexOf('(')).Trim();
-            codeFileName = codeFileName.Substring(codeFileName.IndexOf('>') + 1);
-            string fullFileName = Path.GetFullPath(Path.Combine(ExtractProjectFolder(logLine), codeFileName));
-
-            var lineAndColumn = logLine.Substring(logLine.IndexOf('(') + 1);
-            lineAndColumn = lineAndColumn.Remove(lineAndColumn.IndexOf(')'));
-            var parts = lineAndColumn.Split(',');
-            int line = int.Parse(parts[0]);
-            int column = int.Parse(parts[1]);
-
-            WriteCodeLine(fullFileName, line, column, ExtractError(logLine));
-            _resultWriter.WriteLine();
-        }
-
-        static string ExtractProjectFolder(string logLine)
-        {
-            int lastOpenBracket = logLine.LastIndexOf('[');
-            if (lastOpenBracket > 0)
-            {
-                logLine = logLine.Substring(lastOpenBracket + 1);
-                logLine = logLine.Remove(logLine.IndexOf(']'));
-                return Path.GetDirectoryName(logLine);
-            }
-            return "The project file could not be loaded";
-        }
-
-        static string ExtractError(string logLine)
-        {
-            int position = logLine.IndexOf(": error ");
-            string errorMessage = logLine.Substring(position + 2);
-
-            return errorMessage;
-        }
-
-        void WriteCodeLine(string codeFile, int errorLine, int errorColumn, string error)
+        void WriteCodeLine(ErrorDetails errorDetails)
         {
             try
             {
-                using (var codeReader = _filesProvider.GetCodeFileReader(codeFile))
+                using (var codeReader = _filesProvider.GetCodeFileReader(errorDetails.File))
                 {
                     string lastProgram = "";
-                    int currentLine = 0;
+                    int line = 0;
                     string codeLine;
 
                     while ((codeLine = codeReader.ReadLine()) != null)
@@ -109,16 +68,21 @@ namespace BuildAnalyzer
                             lastProgram = codeLine.Substring(progPos);
                             lastProgram = lastProgram.Remove(lastProgram.IndexOf(')') + 1);
                         }
-                        currentLine++;
-                        if (currentLine == errorLine)
+
+                        line++;
+
+                        if (line == errorDetails.Line)
                         {
-                            codeLine = codeLine.Replace("\t", " ");
-                            _resultWriter.WriteLine(errorLine + ": " + codeLine);
-                            _resultWriter.WriteLine(new string('-', errorColumn - 1 + errorLine.ToString().Length + 2) + '^' +
-                                                    "  " + error.Substring(error.IndexOf(':') + 2));
-                            _resultWriter.WriteLine(codeFile + " " + lastProgram);
+                            _resultWriter.WriteLine(line + ": " + codeLine.Replace("\t", " "));
+                            var errorDescription =
+                                errorDetails.Description.Substring(errorDetails.Description.IndexOf(':') + 2);
+                            _resultWriter.WriteLine(
+                                new string('-', errorDetails.Column - 1 + line.ToString().Length + 2) + '^' + "  " +
+                                errorDescription);
+                            _resultWriter.WriteLine(errorDetails.File + " " + lastProgram);
                         }
                     }
+                    _resultWriter.WriteLine();
                 }
             }
             catch
