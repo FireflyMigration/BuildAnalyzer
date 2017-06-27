@@ -1,59 +1,27 @@
-﻿using System;
-using System.IO;
-using System.Runtime.Versioning;
-using System.Security.Cryptography;
-using System.Text;
-using BuildAnalyzer;
+﻿using BuildAnalyzer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Shouldly;
 
 namespace UnitTests
 {
     [TestClass]
     public class Tests
-    {
+    {      
         [TestMethod]
-        public void TestLogWithErrorsOnly()
+        public void TestLogWithWarningsAndErrors()
         {
-            TextReader logReader = new StreamReader(@"..\..\..\BuildDebugErrorsOnly.log");
-            TextWriter resultWriter = new StringWriter();
-            var analyzer = new LogAnalyzer(new FileSystemFilesProvider(logReader,resultWriter));
-            var errorCount = analyzer.Analyze();
-            errorCount.ShouldBe(1);
+            var mockFilesProvider = new MockLogWithWarningsAndErrorsFilesProvider();
+            var analyzer = new LogAnalyzer(mockFilesProvider);
+            analyzer.Analyze();
+            mockFilesProvider.AssertResult();
         }
 
         [TestMethod]
-        public void TestExpectedOutput()
+        public void TestLogWithErrorsOnly2()
         {
-            BuildAnalyzer.Program.Main(new[] {@"..\..\..\BuildDebug.log"});
-
-            const string expectedFile = @"..\..\..\Expected.txt";
-            const string actualFile = @"..\..\..\BuildDebug.log.errors.txt";
-
-            var expectedHash = GetFileHash(expectedFile);
-            var actualHash = GetFileHash(actualFile);
-
-            Assert.AreEqual(expectedHash, actualHash);
-
-        }
-
-        public string GetFileHash(string filename)
-        {
-            var hash = new SHA1Managed();
-            var clearBytes = File.ReadAllBytes(filename);
-            var hashedBytes = hash.ComputeHash(clearBytes);
-            return ConvertBytesToHex(hashedBytes);
-        }
-
-        public string ConvertBytesToHex(byte[] bytes)
-        {
-            var sb = new StringBuilder();
-
-            for (var i = 0; i < bytes.Length; i++)
-            {
-                sb.Append(bytes[i].ToString("x"));
-            }
-            return sb.ToString();
+            var mockFilesProvider = new MockLogWithErrorsOnlyFilesProvider();
+            var analyzer = new LogAnalyzer(mockFilesProvider);
+            analyzer.Analyze();
+            mockFilesProvider.AssertResult();
         }
     }
 }
