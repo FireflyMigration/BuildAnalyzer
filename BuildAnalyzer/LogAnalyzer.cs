@@ -7,12 +7,15 @@ namespace BuildAnalyzer
     {
         readonly TextReader _logReader;
         readonly TextWriter _resultWriter;
+        readonly IFilesProvider _filesProvider;
+
         readonly HashSet<string> _projects = new HashSet<string>();
 
-        public LogAnalyzer(TextReader logReader, TextWriter resultWriter)
+        public LogAnalyzer(IFilesProvider filesProvider)
         {
-            _logReader = logReader;
-            _resultWriter = resultWriter;
+            _filesProvider = filesProvider;
+            _logReader = _filesProvider.GetLogReader();
+            _resultWriter = _filesProvider.GetResultWriter();
         }
 
         internal int Analyze()
@@ -95,7 +98,7 @@ namespace BuildAnalyzer
         {
             try
             {
-                using (var codeReader = new StreamReader(codeFile))
+                using (var codeReader = _filesProvider.GetCodeFileReader(codeFile))
                 {
                     string lastProgram = "";
                     int currentLine = 0;

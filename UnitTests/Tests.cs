@@ -17,7 +17,7 @@ namespace UnitTests
         {
             TextReader logReader = new StreamReader(@"..\..\..\BuildDebugErrorsOnly.log");
             TextWriter resultWriter = new StringWriter();
-            var analyzer = new LogAnalyzer(logReader, resultWriter);
+            var analyzer = new LogAnalyzer(new FileSystemFilesProvider(logReader,resultWriter));
             var errorCount = analyzer.Analyze();
             errorCount.ShouldBe(1);
         }

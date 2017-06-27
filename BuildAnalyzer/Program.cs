@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 
 namespace BuildAnalyzer
@@ -13,7 +14,7 @@ namespace BuildAnalyzer
 
             try
             {
-                var errorCount = new LogAnalyzer(logReader, resultWriter).Analyze();
+                var errorCount = new LogAnalyzer(new FileSystemFilesProvider(logReader, resultWriter)).Analyze();
 
                 if (File.Exists(logFile + ".NoErrors.txt"))
                     File.Delete(logFile + ".NoErrors.txt");
@@ -37,6 +38,33 @@ namespace BuildAnalyzer
 
                 return 0;
             }
+        }
+    }
+
+    class FileSystemFilesProvider : IFilesProvider
+    {
+        TextReader _logReader;
+        TextWriter _resultWriter;
+
+        public FileSystemFilesProvider(TextReader logReader, TextWriter resultWriter)
+        {
+            _logReader = logReader;
+            _resultWriter = resultWriter;
+        }
+
+        public TextReader GetLogReader()
+        {
+            return _logReader;
+        }
+
+        public TextWriter GetResultWriter()
+        {
+            return _resultWriter;
+        }
+
+        public TextReader GetCodeFileReader(string fileName)
+        {
+            return new StreamReader(fileName);
         }
     }
 }
