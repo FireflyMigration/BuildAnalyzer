@@ -22,25 +22,18 @@ namespace BuildAnalyzer
             {
                 using (_logReader)
                 {
-                    bool buildFailed = false;
                     string logLine;
                     while ((logLine = _logReader.ReadLine()) != null)
                     {
-                        if (logLine.Contains("Build FAILED."))
-                            buildFailed = true;
-
-                        if (buildFailed)
+                        if (logLine.Contains(": error"))
                         {
-                            if (logLine.Contains(": error"))
-                            {
-                                var project = ExtractProject(logLine);
-                                if (!_projects.Contains(project))
-                                    _projects.Add(project);
-
-                                WriteCodeLine(logLine, ExtractError(logLine));
-                                errorCount++;
-                            }
+                            _projects.Add(ExtractProject(logLine));
+                            WriteCodeLine(logLine);
+                            errorCount++;
                         }
+
+                        if (logLine.Contains("Build FAILED."))
+                            break;
                     }
 
                     if (errorCount > 0)
@@ -60,18 +53,13 @@ namespace BuildAnalyzer
             return projectFile;
         }
 
-        string ExtractError(string logLine)
-        {
-            int position = logLine.IndexOf(": error ");
-            string errorMessage = logLine.Substring(position + 2);
+        
 
-            return errorMessage;
-        }
-
-        void WriteCodeLine(string logLine, string errorMessage)
+        void WriteCodeLine(string logLine)
         {
             string codeFileName = logLine.Remove(logLine.IndexOf('(')).Trim();
-            string fullFileName = Path.GetFullPath(Path.Combine(GetProjectFolder(logLine), codeFileName));
+            codeFileName = codeFileName.Substring(codeFileName.IndexOf('>') + 1);
+            string fullFileName = Path.GetFullPath(Path.Combine(ExtractProjectFolder(logLine), codeFileName));
 
             var lineAndColumn = logLine.Substring(logLine.IndexOf('(') + 1);
             lineAndColumn = lineAndColumn.Remove(lineAndColumn.IndexOf(')'));
@@ -79,11 +67,11 @@ namespace BuildAnalyzer
             int line = int.Parse(parts[0]);
             int column = int.Parse(parts[1]);
 
-            WriteCodeLine(fullFileName, line, column, errorMessage);
+            WriteCodeLine(fullFileName, line, column, ExtractError(logLine));
             _resultWriter.WriteLine();
         }
 
-        static string GetProjectFolder(string logLine)
+        static string ExtractProjectFolder(string logLine)
         {
             int lastOpenBracket = logLine.LastIndexOf('[');
             if (lastOpenBracket > 0)
@@ -95,14 +83,22 @@ namespace BuildAnalyzer
             return "The project file could not be loaded";
         }
 
-        void WriteCodeLine(string codeFile, int lineNum, int columnNum, string error)
+        static string ExtractError(string logLine)
+        {
+            int position = logLine.IndexOf(": error ");
+            string errorMessage = logLine.Substring(position + 2);
+
+            return errorMessage;
+        }
+
+        void WriteCodeLine(string codeFile, int errorLine, int errorColumn, string error)
         {
             try
             {
                 using (var codeReader = new StreamReader(codeFile))
                 {
                     string lastProgram = "";
-                    int i = 0;
+                    int currentLine = 0;
                     string codeLine;
 
                     while ((codeLine = codeReader.ReadLine()) != null)
@@ -113,13 +109,13 @@ namespace BuildAnalyzer
                             lastProgram = codeLine.Substring(progPos);
                             lastProgram = lastProgram.Remove(lastProgram.IndexOf(')') + 1);
                         }
-                        i++;
-                        if (i == lineNum)
+                        currentLine++;
+                        if (currentLine == errorLine)
                         {
                             codeLine = codeLine.Replace("\t", " ");
-                           _resultWriter.WriteLine(i + ": " + codeLine);
-                            _resultWriter.WriteLine(new string('-', columnNum - 1 + i.ToString().Length + 2) + '^' + "  " +
-                                             error.Substring(error.IndexOf(':') + 2));
+                            _resultWriter.WriteLine(errorLine + ": " + codeLine);
+                            _resultWriter.WriteLine(new string('-', errorColumn - 1 + errorLine.ToString().Length + 2) + '^' +
+                                                    "  " + error.Substring(error.IndexOf(':') + 2));
                             _resultWriter.WriteLine(codeFile + " " + lastProgram);
                         }
                     }

@@ -3,13 +3,25 @@ using System.IO;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
+using BuildAnalyzer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
 
 namespace UnitTests
 {
     [TestClass]
     public class Tests
     {
+        [TestMethod]
+        public void TestLogWithErrorsOnly()
+        {
+            TextReader logReader = new StreamReader(@"..\..\..\BuildDebugErrorsOnly.log");
+            TextWriter resultWriter = new StringWriter();
+            var analyzer = new LogAnalyzer(logReader, resultWriter);
+            var errorCount = analyzer.Analyze();
+            errorCount.ShouldBe(1);
+        }
+
         [TestMethod]
         public void TestExpectedOutput()
         {

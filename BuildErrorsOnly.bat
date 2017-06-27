@@ -6,7 +6,7 @@
 del buildDebug.log
 del NorthwindTest\bin\Debug\*.* /q
 @echo building...
-msbuild NorthwindTest\NorthwindTest.csproj /clp:ErrorsOnly /filelogger1 /fileloggerparameters1:logfile=buildDebug.log;append;verbosity=n;errorsonly /p:Configuration=Debug /p:Platform=AnyCPU  /maxcpucount:%NUMBER_OF_PROCESSORS%
+msbuild NorthwindTest\NorthwindTest.csproj /clp:ErrorsOnly /filelogger1 /fileloggerparameters1:logfile=buildDebugErrorsOnly.log;append;verbosity=n;errorsonly /p:Configuration=Debug /p:Platform=AnyCPU  /maxcpucount:%NUMBER_OF_PROCESSORS%
 BuildAnalyzer.exe buildDebug.log
 goto :eof
 
