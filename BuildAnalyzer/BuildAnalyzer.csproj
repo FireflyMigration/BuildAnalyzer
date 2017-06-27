@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSystemFilesProvider.cs" />
     <Compile Include="IFilesProvider.cs" />
     <Compile Include="LogAnalyzer.cs" />
     <Compile Include="Program.cs" />
