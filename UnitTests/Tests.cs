@@ -20,7 +20,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestLogWithErrorsOnly2()
+        public void TestLogWithErrorsOnly()
         {
             Test(new MockLogWithErrorsOnlyFilesProvider());
         }
@@ -29,6 +29,12 @@ namespace UnitTests
         public void TestSuccessfulLog()
         {
             Test(new MockSuccessfulLogFilesProvider());
+        }
+
+        [TestMethod]
+        public void TestLogWithErrorInMsbuildXml()
+        {
+            Test(new MockLogWithErrorInMsbuildXml());
         }
 
        
