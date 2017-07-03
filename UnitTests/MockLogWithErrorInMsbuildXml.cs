@@ -25,7 +25,8 @@ namespace UnitTests
 
         protected override string GetExpectedResultText()
         {
-            return "3:     <Target Name=\"<!$SB_TARGET>\" DependsOnTargets=\"<!$SB_DEPENDS>\">\r\n" +
+            return "Migration Engine Error! Please run the migration again.\r\n\r\n" +
+                   "3:     <Target Name=\"<!$SB_TARGET>\" DependsOnTargets=\"<!$SB_DEPENDS>\">\r\n" +
                    "---------------------^  The project file could not be loaded. '<', hexadecimal value 0x3C, is an invalid attribute character. Line 3, position 19.\r\n" +
                    "C:\\Repos\\BuildAnalyzer\\UnitTests\\bin\\Debug\\msbuild.xml \r\n\r\n" +
                    "========================\r\n" +

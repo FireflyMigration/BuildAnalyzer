@@ -30,15 +30,7 @@ namespace BuildAnalyzer
                         if (logLine.Contains(": error"))
                         {
                             var errorDetails = errorParser.ParseError(logLine);
-
-                            if (string.IsNullOrEmpty(errorDetails.File))
-                            {
-                                _resultWriter.WriteLine(errorDetails.Description);
-                            }
-                            else
-                            {
-                                WriteDetailedError(errorDetails);
-                            }
+                            WriteDetailedError(errorDetails);
 
                             if (!string.IsNullOrEmpty(errorDetails.Project))
                             {
@@ -72,6 +64,9 @@ namespace BuildAnalyzer
                     string lastProgram = "";
                     int line = 0;
                     string codeLine;
+
+                    if (errorDetails.File.EndsWith("msbuild.xml"))
+                        _resultWriter.WriteLine("Migration Engine Error! Please run the migration again.\r\n");
 
                     while ((codeLine = codeReader.ReadLine()) != null)
                     {
