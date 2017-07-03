@@ -16,7 +16,7 @@ namespace BuildAnalyzer
                 Description = ExtractError(logLine),
                 Project = ExtractProject(logLine),
             };
-            errorDetails.File = ExtractCodeFile(logLine, errorDetails.Project);
+            errorDetails.File = ExtractFile(logLine, errorDetails.Project);
             ExtractLineAndColumn(logLine, errorDetails);
 
             return errorDetails;
@@ -26,6 +26,7 @@ namespace BuildAnalyzer
         {
             int position = logLine.IndexOf(": error ");
             string errorMessage = logLine.Substring(position + 2);
+            errorMessage = errorMessage.Substring(errorMessage.IndexOf(':') + 2);
 
             return errorMessage;
         }
@@ -33,16 +34,27 @@ namespace BuildAnalyzer
         string ExtractProject(string logLine)
         {
             var lastOpenBracket = logLine.LastIndexOf('[');
+            if (lastOpenBracket == -1)
+                return null;
             string projectFile = logLine.Substring(lastOpenBracket + 1);
             projectFile = projectFile.Remove(projectFile.Length - 1);
             return projectFile;
         }
 
-        string ExtractCodeFile(string logLine, string projectFile)
+        string ExtractFile(string logLine, string projectFile)
         {
+            if (logLine.Contains("msbuild.xml"))
+                return Path.GetFullPath("msbuild.xml");
+
+            if (projectFile == null)
+                return String.Empty;
+
             string codeFileName = logLine.Remove(logLine.IndexOf('(')).Trim();
             codeFileName = codeFileName.Substring(codeFileName.IndexOf('>') + 1);
             string projectFolder = Path.GetDirectoryName(projectFile);
+
+            if (projectFolder == null)
+                return String.Empty;
             string fullFileName = Path.GetFullPath(Path.Combine(projectFolder, codeFileName));
 
             return fullFileName;

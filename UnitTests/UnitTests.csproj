@@ -54,6 +54,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="MockFilesProvider.cs" />
+    <Compile Include="MockLogWithErrorInMsbuildXml.cs" />
     <Compile Include="MockLogWithErrorsOnlyFilesProvider.cs" />
     <Compile Include="MockLogWithWarningsAndErrorsFilesProvider.cs" />
     <Compile Include="MockSuccessfulLogFilesProvider.cs" />

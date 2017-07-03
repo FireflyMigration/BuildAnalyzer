@@ -30,8 +30,21 @@ namespace BuildAnalyzer
                         if (logLine.Contains(": error"))
                         {
                             var errorDetails = errorParser.ParseError(logLine);
-                            WriteCodeLine(errorDetails);
-                            _projects.Add(errorDetails.Project);
+
+                            if (string.IsNullOrEmpty(errorDetails.File))
+                            {
+                                _resultWriter.WriteLine(errorDetails.Description);
+                            }
+                            else
+                            {
+                                WriteDetailedError(errorDetails);
+                            }
+
+                            if (!string.IsNullOrEmpty(errorDetails.Project))
+                            {
+                                _projects.Add(errorDetails.Project);
+                            }
+
                             errorCount++;
                         }
 
@@ -50,7 +63,7 @@ namespace BuildAnalyzer
         }
 
 
-        void WriteCodeLine(ErrorDetails errorDetails)
+        void WriteDetailedError(ErrorDetails errorDetails)
         {
             try
             {
@@ -74,12 +87,10 @@ namespace BuildAnalyzer
                         if (line == errorDetails.Line)
                         {
                             _resultWriter.WriteLine(line + ": " + codeLine.Replace("\t", " "));
-                            var errorDescription =
-                                errorDetails.Description.Substring(errorDetails.Description.IndexOf(':') + 2);
-                            _resultWriter.WriteLine(
-                                new string('-', errorDetails.Column - 1 + line.ToString().Length + 2) + '^' + "  " +
-                                errorDescription);
+                            _resultWriter.WriteLine(new string('-', errorDetails.Column + line.ToString().Length + 1) +
+                                                    '^' + "  " + errorDetails.Description);
                             _resultWriter.WriteLine(errorDetails.File + " " + lastProgram);
+                            break;
                         }
                     }
                     _resultWriter.WriteLine();
@@ -96,11 +107,15 @@ namespace BuildAnalyzer
             _resultWriter.WriteLine("Total errors: " + counter);
             _resultWriter.WriteLine("========================");
             _resultWriter.WriteLine("");
-            _resultWriter.WriteLine("Projects:");
 
-            foreach (var project in _projects)
+            if (_projects.Count > 0)
             {
-                _resultWriter.WriteLine(project);
+                _resultWriter.WriteLine("Projects:");
+
+                foreach (var project in _projects)
+                {
+                    _resultWriter.WriteLine(project);
+                }
             }
         }
     }
