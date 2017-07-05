@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BuildAnalyzer
@@ -49,7 +50,7 @@ namespace BuildAnalyzer
             if (projectFile == null)
                 return String.Empty;
 
-            string codeFileName = logLine.Remove(logLine.IndexOf('(')).Trim();
+            string codeFileName = logLine.Remove(logLine.LastIndexOf('(')).Trim();
             codeFileName = codeFileName.Substring(codeFileName.IndexOf('>') + 1);
             string projectFolder = Path.GetDirectoryName(projectFile);
 
@@ -62,11 +63,17 @@ namespace BuildAnalyzer
 
         void ExtractLineAndColumn(string logLine, ErrorDetails errorDetails)
         {
-            var lineAndColumn = logLine.Substring(logLine.IndexOf('(') + 1);
-            lineAndColumn = lineAndColumn.Remove(lineAndColumn.IndexOf(')'));
-            var parts = lineAndColumn.Split(',');
-            errorDetails.Line = Int32.Parse(parts[0]);
-            errorDetails.Column = Int32.Parse(parts[1]);
+            var regx = new Regex(@"\([0-9]+,[0-9]+\)");
+            var match = regx.Match(logLine);
+
+            if (match.Success)
+            {
+                var lineAndColumn = match.Value.Substring(1);
+                lineAndColumn = lineAndColumn.Remove(lineAndColumn.Length - 1);
+                var parts = lineAndColumn.Split(',');
+                errorDetails.Line = Int32.Parse(parts[0]);
+                errorDetails.Column = Int32.Parse(parts[1]);
+            }
         }
     }
 }

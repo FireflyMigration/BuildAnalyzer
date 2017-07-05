@@ -9,12 +9,11 @@ namespace BuildAnalyzer
         public static int Main(string[] args)
         {
             var logFile = args.Length == 0 ? "buildDebug.log" : args[0];
-            var logReader = new StreamReader(logFile);
-            var resultWriter = new StreamWriter(logFile + ".errors.txt");
+            var resultFile = logFile + ".errors.txt";
 
             try
             {
-                var logAnalyzer = new LogAnalyzer(new FileSystemFilesProvider(logReader, resultWriter));
+                var logAnalyzer = new LogAnalyzer(new FileSystemFilesProvider(logFile, resultFile));
                 var errorCount = logAnalyzer.Analyze();
 
                 if (File.Exists(logFile + ".NoErrors.txt"))
@@ -30,9 +29,13 @@ namespace BuildAnalyzer
             }
             catch (Exception e)
             {
-                resultWriter.WriteLine("Build Analyzer Error:");
-                resultWriter.WriteLine(e.Message);
-                resultWriter.WriteLine(e.StackTrace);
+                using (var resultWriter = new StreamWriter(resultFile,true))
+                {
+                    resultWriter.WriteLine("=====================");
+                    resultWriter.WriteLine("Build Analyzer Error:");
+                    resultWriter.WriteLine(e.Message);
+                    resultWriter.WriteLine(e.StackTrace);
+                }
 
                 if (File.Exists(logFile + ".NoErrors.txt"))
                     File.Delete(logFile + ".NoErrors.txt");

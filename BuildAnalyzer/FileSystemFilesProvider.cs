@@ -4,23 +4,23 @@ namespace BuildAnalyzer
 {
     class FileSystemFilesProvider : IFilesProvider
     {
-        readonly TextReader _logReader;
-        readonly TextWriter _resultWriter;
+        readonly string _logFile;
+        readonly string _resultFile;
 
-        public FileSystemFilesProvider(TextReader logReader, TextWriter resultWriter)
+        public FileSystemFilesProvider(string logFile, string resultFile)
         {
-            _logReader = logReader;
-            _resultWriter = resultWriter;
+            _logFile = logFile;
+            _resultFile = resultFile;
         }
 
         public TextReader GetLogReader()
         {
-            return _logReader;
+            return new StreamReader(_logFile);
         }
 
         public TextWriter GetResultWriter()
         {
-            return _resultWriter;
+            return new StreamWriter(_resultFile);
         }
 
         public TextReader GetCodeFileReader(string fileName)
