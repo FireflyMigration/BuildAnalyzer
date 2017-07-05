@@ -37,6 +37,12 @@ namespace UnitTests
             Test(new MockLogWithErrorInMsbuildXml());
         }
 
+        [TestMethod]
+        public void TestLogCrash()
+        {
+            Test(new MockLogWithErrorsInPostBuildEvent());
+        }
+
        
     }
 }

@@ -68,6 +68,14 @@ namespace BuildAnalyzer
                     if (errorDetails.File.EndsWith("msbuild.xml"))
                         _resultWriter.WriteLine("Migration Engine Error! Please run the migration again.\r\n");
 
+                    if (errorDetails.File.EndsWith(".targets"))
+                    {
+                        _resultWriter.WriteLine("Error in post build event:");
+                        _resultWriter.WriteLine(errorDetails.Description);
+                        _resultWriter.WriteLine();
+                        return;
+                    }
+
                     while ((codeLine = codeReader.ReadLine()) != null)
                     {
                         var progPos = codeLine.IndexOf("(P#");
