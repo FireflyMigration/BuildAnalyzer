@@ -50,15 +50,21 @@ namespace BuildAnalyzer
             if (projectFile == null)
                 return String.Empty;
 
-            string codeFileName = logLine.Remove(logLine.LastIndexOf('(')).Trim();
-            codeFileName = codeFileName.Substring(codeFileName.IndexOf('>') + 1);
-            string projectFolder = Path.GetDirectoryName(projectFile);
+            var regex = new Regex(@"(>|C:\\).+?((\b\.cs\b)|(\b\.targets\b))");
+            var match = regex.Match(logLine);
+            if (match.Success)
+            {
+                string codeFileName = match.Value.Replace(">","");
+                string projectFolder = Path.GetDirectoryName(projectFile);
 
-            if (projectFolder == null)
-                return String.Empty;
-            string fullFileName = Path.GetFullPath(Path.Combine(projectFolder, codeFileName));
+                if (projectFolder == null)
+                    return String.Empty;
+                string fullFileName = Path.GetFullPath(Path.Combine(projectFolder, codeFileName));
 
-            return fullFileName;
+                return fullFileName;
+            }
+
+            return string.Empty;
         }
 
         void ExtractLineAndColumn(string logLine, ErrorDetails errorDetails)
