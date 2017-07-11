@@ -53,6 +53,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="MockLogWithErrors.cs" />
     <Compile Include="MockFilesProvider.cs" />
     <Compile Include="MockLogWithErrorsInPostBuildEvent.cs" />
     <Compile Include="MockLogWithErrorInMsbuildXml.cs" />

@@ -38,9 +38,15 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestLogCrash()
+        public void TestLogWithErrorsInPostBuildEvent()
         {
             Test(new MockLogWithErrorsInPostBuildEvent());
+        }
+
+        [TestMethod]
+        public void TestLogWithErrors()
+        {
+            Test(new MockLogWithErrors());
         }
 
        
