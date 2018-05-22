@@ -48,7 +48,12 @@ namespace UnitTests
         {
             Test(new MockLogWithErrors());
         }
+        [TestMethod]
+        public void TestLogWithLineNumbers()
+        {
+            Test(new MockLogWithLineNumbers());
+        }
 
-       
+
     }
 }

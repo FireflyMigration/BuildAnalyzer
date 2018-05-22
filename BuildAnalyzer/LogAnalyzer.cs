@@ -92,7 +92,7 @@ namespace BuildAnalyzer
                             _resultWriter.WriteLine(line + ": " + codeLine.Replace("\t", " "));
                             _resultWriter.WriteLine(new string('-', errorDetails.Column + line.ToString().Length + 1) +
                                                     '^' + "  " + errorDetails.Description);
-                            _resultWriter.WriteLine(errorDetails.File + " " + lastProgram);
+                            _resultWriter.WriteLine(errorDetails.File + ":line "+errorDetails.Line+" "+ lastProgram);
                             break;
                         }
                     }

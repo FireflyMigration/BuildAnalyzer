@@ -125,7 +125,7 @@
         {
             return "52:                 InitializeDataView()\r\n" +
                    "----------------------------------------^  ; expected [C:\\Users\\Sefi\\Source\\Repos\\BuildAnalyzer\\NorthwindTest\\NorthwindTest.csproj]\r\n" +
-                   "C:\\Users\\Sefi\\Source\\Repos\\BuildAnalyzer\\NorthwindTest\\TestSubFormCallFor357.cs (P#11.1)\r\n" +
+                   "C:\\Users\\Sefi\\Source\\Repos\\BuildAnalyzer\\NorthwindTest\\TestSubFormCallFor357.cs:line 52 (P#11.1)\r\n" +
                    "\r\n" +
                    "========================\r\n" +
                    "Total errors: 1\r\n" +

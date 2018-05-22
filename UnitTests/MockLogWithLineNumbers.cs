@@ -1,6 +1,6 @@
 ﻿namespace UnitTests
 {
-    class MockLogWithErrorsOnlyFilesProvider : MockFilesProvider
+    class MockLogWithLineNumbers : MockFilesProvider
     {
         protected override string GetLogText()
         {

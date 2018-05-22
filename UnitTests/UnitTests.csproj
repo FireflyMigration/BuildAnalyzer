@@ -57,6 +57,7 @@
     <Compile Include="MockFilesProvider.cs" />
     <Compile Include="MockLogWithErrorsInPostBuildEvent.cs" />
     <Compile Include="MockLogWithErrorInMsbuildXml.cs" />
+    <Compile Include="MockLogWithLineNumbers.cs" />
     <Compile Include="MockLogWithErrorsOnlyFilesProvider.cs" />
     <Compile Include="MockLogWithWarningsAndErrorsFilesProvider.cs" />
     <Compile Include="MockSuccessfulLogFilesProvider.cs" />
