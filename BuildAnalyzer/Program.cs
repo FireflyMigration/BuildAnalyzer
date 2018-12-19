@@ -10,6 +10,7 @@ namespace BuildAnalyzer
         {
             var logFile = args.Length == 0 ? "buildDebug.log" : args[0];
             var resultFile = logFile + ".errors.txt";
+            
 
             try
             {
@@ -24,7 +25,6 @@ namespace BuildAnalyzer
                     File.Move(logFile + ".errors.txt", logFile + ".NoErrors.txt");
                     return 0;
                 }
-
                 return 1;
             }
             catch (Exception e)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BuildAnalyzer
@@ -8,17 +9,19 @@ namespace BuildAnalyzer
         readonly IFilesProvider _filesProvider;
         readonly TextWriter _resultWriter;
         readonly HashSet<string> _projects = new HashSet<string>();
-
+        
         public LogAnalyzer(IFilesProvider filesProvider)
         {
             _filesProvider = filesProvider;
             _resultWriter = _filesProvider.GetResultWriter();
         }
-
         internal int Analyze()
         {
             int errorCount = 0;
             var errorParser = new ErrorParser();
+            DateTime BuildStart = new DateTime();
+            DateTime BuildEnd = new DateTime();
+
 
             using (_resultWriter)
             {
@@ -40,9 +43,15 @@ namespace BuildAnalyzer
                             errorCount++;
                         }
 
-                        if (logLine.Contains("Build FAILED."))
-                            break;
+                        if (logLine.StartsWith("BuildStart-"))
+                            BuildStart = DateTime.Parse(logLine.Substring(11).Trim());
+                        if (logLine.StartsWith("BuildEnd-"))
+                        {
+                            BuildEnd = DateTime.Parse(logLine.Substring(9).Trim());
+                            _resultWriter.WriteLine("Total build time: "+(BuildEnd - BuildStart));
+                        }
                     }
+                    
 
                     if (errorCount > 0)
                     {
@@ -50,7 +59,7 @@ namespace BuildAnalyzer
                     }
                 }
             }
-
+            //Program.BuildTotalTime = BuildStart-BuildEnd;
             return errorCount;
         }
 
