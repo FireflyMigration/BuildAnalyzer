@@ -59,7 +59,6 @@ namespace BuildAnalyzer
                     }
                 }
             }
-            //Program.BuildTotalTime = BuildStart-BuildEnd;
             return errorCount;
         }
 
