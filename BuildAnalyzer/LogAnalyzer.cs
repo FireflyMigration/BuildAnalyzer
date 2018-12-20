@@ -90,7 +90,12 @@ namespace BuildAnalyzer
                         if (progPos > 0)
                         {
                             lastProgram = codeLine.Substring(progPos);
-                            lastProgram = lastProgram.Remove(lastProgram.IndexOf(')') + 1);
+                            //in case the program ends with a "...(P#XX)</summary>"
+                            var x = lastProgram.IndexOf(')')+1;
+                                if (lastProgram.Length>x)
+                                    lastProgram = lastProgram.Remove(x);
+                            
+                            
                         }
 
                         line++;
@@ -107,7 +112,7 @@ namespace BuildAnalyzer
                     _resultWriter.WriteLine();
                 }
             }
-            catch
+            catch(Exception e)
             {
             }
         }
