@@ -44,10 +44,10 @@ namespace BuildAnalyzer
                         }
 
                         if (logLine.StartsWith("BuildStart-"))
-                            BuildStart = DateTime.Parse(logLine.Substring(11).Trim());
+                            BuildStart = DateTime.Parse(logLine.Substring(11).Substring(0,8).Trim());
                         if (logLine.StartsWith("BuildEnd-"))
                         {
-                            BuildEnd = DateTime.Parse(logLine.Substring(9).Trim());
+                            BuildEnd = DateTime.Parse(logLine.Substring(9).Substring(0, 8).Trim());
                             _resultWriter.WriteLine("Total build time: "+(BuildEnd - BuildStart));
                         }
                     }
