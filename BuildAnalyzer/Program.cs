@@ -40,7 +40,7 @@ namespace BuildAnalyzer
                 if (File.Exists(logFile + ".NoErrors.txt"))
                     File.Delete(logFile + ".NoErrors.txt");
 
-                return 0;
+                return 1;
             }
         }
     }
